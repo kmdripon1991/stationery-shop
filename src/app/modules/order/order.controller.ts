@@ -10,7 +10,6 @@ const createOrder = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({
         message: result,
         status: false,
-        error: Error,
       });
       return;
     }
