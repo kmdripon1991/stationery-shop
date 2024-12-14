@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { Product } from './product.interface';
+import { TProduct } from './product.interface';
 
 const ProductCategoryEnum = [
   'Writing',
@@ -9,7 +9,7 @@ const ProductCategoryEnum = [
   'Technology',
 ];
 
-const productSchema = new Schema<Product>(
+const productSchema = new Schema<TProduct>(
   {
     name: {
       type: String,
@@ -28,17 +28,16 @@ const productSchema = new Schema<Product>(
     },
     category: {
       type: String,
-      required: [true, 'Category is required.'],
       enum: {
         values: ProductCategoryEnum,
         message:
           'Category must be one of Writing, Office Supplies, Art Supplies, Educational, or Technology.',
       },
+      required: [true, 'Category is required.'],
     },
     description: {
       type: String,
       required: [true, 'Description is required.'],
-      maxlength: [500, 'Description cannot exceed 500 characters.'],
     },
     quantity: {
       type: Number,
@@ -51,9 +50,9 @@ const productSchema = new Schema<Product>(
     },
   },
   {
-    versionKey: false,
     timestamps: true,
+    versionKey: false,
   },
 );
 
-export const ProductModel = model<Product>('Product', productSchema);
+export const ProductModel = model<TProduct>('Product', productSchema);

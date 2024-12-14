@@ -1,15 +1,22 @@
-import { Product } from './product.interface';
+import { TProduct } from './product.interface';
 import { ProductModel } from './product.model';
 
-const createProductIntoDB = async (productData: Product): Promise<Product> => {
+const createProductIntoDB = async (productData: TProduct) => {
   const result = await ProductModel.create(productData);
   return result;
 };
 
-const getAllProductsFromDB = async (searchValue: string | object) => {
-  const filter =
-    typeof searchValue === 'string' ? { name: searchValue } : searchValue;
-  const result = await ProductModel.find(filter);
+const getAllProductsFromDB = async (searchTerm: string) => {
+  const query = searchTerm
+    ? {
+        $or: [
+          { name: searchTerm },
+          { brand: searchTerm },
+          { category: searchTerm },
+        ],
+      }
+    : {};
+  const result = await ProductModel.find(query);
   return result;
 };
 
@@ -20,7 +27,7 @@ const getSingleProductFromDB = async (productId: string) => {
 
 const updateProductFromDB = async (
   productId: string,
-  data: Partial<Product>,
+  data: Partial<TProduct>,
 ) => {
   const result = await ProductModel.findByIdAndUpdate(productId, data, {
     new: true,
@@ -29,7 +36,7 @@ const updateProductFromDB = async (
 };
 
 const deleteProductFromDB = async (productId: string) => {
-  const result = await ProductModel.findByIdAndDelete(productId);
+  const result = await ProductModel.findByIdAndDelete(productId, { new: true });
   return result;
 };
 

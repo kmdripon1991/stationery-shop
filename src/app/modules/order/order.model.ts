@@ -1,8 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { Order } from './order.interface';
-import { ProductModel } from '../product/product.model';
+import { TOrder } from './order.interface';
 
-const orderSchema = new Schema<Order>(
+const orderSchema = new Schema<TOrder>(
   {
     email: {
       type: String,
@@ -24,17 +23,6 @@ const orderSchema = new Schema<Order>(
       type: Number,
       required: [true, 'Total price is required.'],
       min: [0, 'Total price must be a positive number.'],
-      validate: {
-        validator: async function (value: number) {
-          const product = await ProductModel.findById(this.product);
-          if (!product) {
-            return false;
-          }
-          const total = product.price * this.quantity;
-          return value === total;
-        },
-        message: 'Total price does not match',
-      },
     },
   },
   {
@@ -43,4 +31,4 @@ const orderSchema = new Schema<Order>(
   },
 );
 
-export const OrderModel = model<Order>('Order', orderSchema);
+export const OrderModel = model<TOrder>('Order', orderSchema);

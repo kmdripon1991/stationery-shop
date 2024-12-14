@@ -3,7 +3,7 @@ import { ProductServices } from './product.service';
 
 const createProduct = async (req: Request, res: Response) => {
   try {
-    const payload = req.body.product;
+    const payload = req.body;
     const result = await ProductServices.createProductIntoDB(payload);
     res.status(200).json({
       message: 'Product created Successfully',
@@ -15,7 +15,7 @@ const createProduct = async (req: Request, res: Response) => {
     res.status(500).json({
       message: 'Validation Failed',
       success: false,
-      error: err.errors.category,
+      error: err.errors,
       stack: err.stack,
     });
   }
@@ -25,19 +25,11 @@ const getAllProducts = async (req: Request, res: Response) => {
   try {
     const { searchTerm } = req.query;
 
-    const filter = {
-      $or: [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { brand: { $regex: searchTerm, $options: 'i' } },
-        { category: { $regex: searchTerm, $options: 'i' } },
-      ],
-    };
-
     const result = await ProductServices.getAllProductsFromDB(
-      searchTerm ? filter : {},
+      searchTerm as string,
     );
     res.status(200).json({
-      message: 'Product retrieve successfully',
+      message: 'Products retrieved successfully',
       status: true,
       data: result,
     });
@@ -46,7 +38,7 @@ const getAllProducts = async (req: Request, res: Response) => {
     res.status(500).json({
       message: 'Products not found',
       status: false,
-      error: err.errors.category,
+      error: err.errors,
       stack: err.stack,
     });
   }
@@ -57,7 +49,7 @@ const getSingleProduct = async (req: Request, res: Response) => {
     const productId = req.params.productId;
     const result = await ProductServices.getSingleProductFromDB(productId);
     res.status(200).json({
-      message: 'Product retrieve successfully',
+      message: 'Product retrieved successfully',
       status: true,
       data: result,
     });
@@ -66,7 +58,7 @@ const getSingleProduct = async (req: Request, res: Response) => {
     res.status(404).json({
       message: 'Product not found',
       status: false,
-      error: err,
+      error: err.errors,
       stack: err.stack,
     });
   }
@@ -90,13 +82,14 @@ const updateProduct = async (req: Request, res: Response) => {
     res.status(500).json({
       message: 'Products not found',
       status: false,
-      error: err.message,
+      error: err.errors,
+      stack: err.stack,
     });
   }
 };
 
 const deleteProduct = async (req: Request, res: Response) => {
-  const productId = req.params.productId;
+  const { productId } = req.params;
   try {
     const result = await ProductServices.deleteProductFromDB(productId);
     res.status(200).json({
@@ -109,7 +102,7 @@ const deleteProduct = async (req: Request, res: Response) => {
     res.status(500).json({
       message: 'Something went wrong',
       status: false,
-      error: err,
+      error: err.errors,
       stack: err.stack,
     });
   }
